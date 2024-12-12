@@ -4,6 +4,7 @@
 //
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,9 +28,8 @@ public class Main {
             System.out.println("5. Search by Names");
             System.out.println("6. Delete Doctor");
             System.out.println("7. Delete Patient");
-            System.out.println("8. Assign Patient to Doctor");
-            System.out.println("9. View Doctor's Patient History");
-            System.out.println("10. Exit");
+            System.out.println("8. View Doctor's Patient History");
+            System.out.println("9. Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -56,12 +56,9 @@ public class Main {
                     deletePatient();
                     break;
                 case 8:
-                    assignPatientToDoctor();
-                    break;
-                case 9:
                     viewDoctorPatientHistory();
                     break;
-                case 10:
+                case 9:
                     exit = true;
                     System.out.println("Exiting Hospital Management System. Goodbye!");
                     break;
@@ -73,38 +70,214 @@ public class Main {
     }
 
     private static void addDoctor() {
-        System.out.print("Enter Doctor's Name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter Doctor's Age: ");
-        int age = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Enter Doctor's Gender: ");
-        String gender = scanner.nextLine();
-        System.out.print("Enter Specialization: ");
-        String specialization = scanner.nextLine();
+        String name;
+        while (true) {
+            System.out.print("Enter Doctor's Full Name (First Name and Surname): ");
+            name = scanner.nextLine();
+            if (name.trim().split("\\s+").length >= 2) { // Ensure at least two words
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter both a first name and a surname.");
+            }
+        }
+
+        int age = 0;
+        while (true) {
+            System.out.print("Enter Doctor's Age: ");
+            try {
+                age = scanner.nextInt();
+                if (age <= 0) {
+                    System.out.println("Age must be a positive number. Please try again.");
+                } else {
+                    break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number for the age.");
+                scanner.nextLine(); // Clear the invalid input
+            }
+        }
+        scanner.nextLine(); // Consume the newline character after age input
+
+        String gender;
+        while (true) {
+            System.out.print("Enter Doctor's Gender (Male/Female): ");
+            gender = scanner.nextLine().trim();
+            if (gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("Female")) {
+                break;
+            } else {
+                System.out.println("Invalid input. Gender must be 'Male' or 'Female'. Please try again.");
+            }
+        }
+
+        String[] specializations = {
+                "General Practitioner",
+                "Cardiologist",
+                "Pediatrician",
+                "Orthopedist",
+                "Dermatologist",
+                "Neurologist",
+                "Psychiatrist"
+        };
+
+        System.out.println("Choose Specialization:");
+        for (int i = 0; i < specializations.length; i++) {
+            System.out.println((i + 1) + ". " + specializations[i]);
+        }
+
+        String specialization = "";
+        while (true) {
+            System.out.print("Enter the number corresponding to the specialization: ");
+            int choice;
+            try {
+                choice = scanner.nextInt();
+                if (choice >= 1 && choice <= specializations.length) {
+                    specialization = specializations[choice - 1];
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please select a number between 1 and " + specializations.length + ".");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Clear the invalid input
+            }
+        }
+        scanner.nextLine(); // Consume the newline character after specialization input
+
         System.out.print("Enter Doctor ID: ");
         String doctorID = scanner.nextLine();
+
         Doctors doctor = new Doctors(name, age, gender, specialization, doctorID);
         doctors.add(doctor);
         System.out.println("Doctor added successfully!");
     }
 
+
+
+
     private static void addPatient() {
-        System.out.print("Enter Patient's Name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter Patient's Age: ");
-        int age = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Enter Patient's Gender: ");
-        String gender = scanner.nextLine();
+        String name;
+        while (true) {
+            System.out.print("Enter Patient's Full Name (First Name and Surname): ");
+            name = scanner.nextLine();
+            if (name.trim().split("\\s+").length >= 2) { // Ensure at least two words
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter both a first name and a surname.");
+            }
+        }
+
+        int age = 0;
+        while (true) {
+            System.out.print("Enter Patient's Age: ");
+            try {
+                age = scanner.nextInt();
+                if (age <= 0) {
+                    System.out.println("Age must be a positive number. Please try again.");
+                } else {
+                    break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number for the age.");
+                scanner.nextLine(); // Clear the invalid input
+            }
+        }
+        scanner.nextLine(); // Consume the newline character after age input
+
+        String gender;
+        while (true) {
+            System.out.print("Enter Patient's Gender (Male/Female): ");
+            gender = scanner.nextLine().trim();
+            if (gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("Female")) {
+                break;
+            } else {
+                System.out.println("Invalid input. Gender must be 'Male' or 'Female'. Please try again.");
+            }
+        }
+
         System.out.print("Enter Patient ID: ");
         String patientID = scanner.nextLine();
-        System.out.print("Enter Ailment: ");
-        String ailment = scanner.nextLine();
+
+        // Map of specializations to ailments
+        String[][] specializationToAilments = {
+                {"General Practitioner", "Cold/Flu", "General Checkup", "Fever", "Headache"},
+                {"Cardiologist", "Hypertension", "Heart Disease", "Chest Pain"},
+                {"Pediatrician", "Common Cold (Children)", "Vaccination", "Growth Issues"},
+                {"Orthopedist", "Bone Fracture", "Arthritis", "Joint Pain"},
+                {"Dermatologist", "Skin Allergy", "Eczema", "Acne"},
+                {"Neurologist", "Migraine", "Seizures", "Nerve Pain"},
+                {"Psychiatrist", "Anxiety", "Depression", "Insomnia"}
+        };
+
+        System.out.println("Choose Specialization for the Ailment:");
+        for (int i = 0; i < specializationToAilments.length; i++) {
+            System.out.println((i + 1) + ". " + specializationToAilments[i][0]);
+        }
+
+        String[] ailments = null;
+        String selectedSpecialization = "";
+        while (ailments == null) {
+            try {
+                System.out.print("Enter the number corresponding to the specialization: ");
+                int specChoice = scanner.nextInt();
+                if (specChoice >= 1 && specChoice <= specializationToAilments.length) {
+                    ailments = specializationToAilments[specChoice - 1];
+                    selectedSpecialization = ailments[0]; // Get the specialization name
+                } else {
+                    System.out.println("Invalid choice. Please select a valid specialization.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine(); // Clear invalid input
+            }
+        }
+        scanner.nextLine(); // Consume newline
+
+        System.out.println("Choose Ailment:");
+        for (int i = 1; i < ailments.length; i++) { // Start from 1 to skip specialization name
+            System.out.println(i + ". " + ailments[i]);
+        }
+
+        String ailment = "";
+        while (true) {
+            try {
+                System.out.print("Enter the number corresponding to the ailment: ");
+                int ailmentChoice = scanner.nextInt();
+                if (ailmentChoice >= 1 && ailmentChoice < ailments.length) {
+                    ailment = ailments[ailmentChoice];
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please select a valid ailment.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine(); // Clear invalid input
+            }
+        }
+        scanner.nextLine(); // Consume newline
+
+        // Create the patient
         Patient patient = new Patient(name, age, gender, patientID, ailment);
         patients.add(patient);
+
+        // Assign patient to doctors with the matching specialization
+        boolean doctorFound = false;
+        for (Doctors doctor : doctors) {
+            if (doctor.getSpecialization().equalsIgnoreCase(selectedSpecialization)) {
+                doctor.addPatientToHistory(patient);
+                doctorFound = true;
+            }
+        }
+
         System.out.println("Patient added successfully!");
+        if (doctorFound) {
+            System.out.println("Patient has been automatically assigned to doctors with specialization: " + selectedSpecialization);
+        } else {
+            System.out.println("No doctors with the specialization '" + selectedSpecialization + "' found. Patient not assigned to any doctor.");
+        }
     }
+
+
+
 
     private static void displayDoctors() {
         System.out.println("\nList of Doctors:");
@@ -136,12 +309,13 @@ public class Main {
 
     private static void searchByName() {
         System.out.print("Enter name to search: ");
-        String name = scanner.nextLine();
+        String name = scanner.nextLine().trim().toLowerCase(); // Trim and convert to lowercase for case-insensitive search
+
         System.out.println("\nSearching for Doctors:");
         boolean foundDoctor = false;
 
         for (Doctors doctor : doctors) {
-            if (doctor.getName().equalsIgnoreCase(name)) {
+            if (doctor.getName().toLowerCase().contains(name)) { // Use contains for partial match
                 doctor.displayInfo();
                 foundDoctor = true;
                 System.out.println();
@@ -156,7 +330,7 @@ public class Main {
         boolean foundPatient = false;
 
         for (Patient patient : patients) {
-            if (patient.getName().equalsIgnoreCase(name)) {
+            if (patient.getName().toLowerCase().contains(name)) { // Use contains for partial match
                 patient.displayInfo();
                 foundPatient = true;
                 System.out.println();
@@ -166,8 +340,8 @@ public class Main {
         if (!foundPatient) {
             System.out.println("No patient found with the name: " + name);
         }
-
     }
+
 
     private static void deleteDoctor() {
         System.out.print("Enter Doctor ID to delete: ");
@@ -211,41 +385,6 @@ public class Main {
 
     }
 
-    private static void assignPatientToDoctor() {
-        System.out.print("Enter Doctor ID: ");
-        String doctorID = scanner.nextLine();
-        Doctors selectedDoctor = null;
-
-        for (Doctors doctor : doctors) {
-            if (doctor.getDoctorID().equalsIgnoreCase(doctorID)) {
-                selectedDoctor = doctor;
-                break;
-            }
-        }
-
-        if (selectedDoctor == null) {
-            System.out.println("No doctor found with the given ID.");
-        } else {
-            System.out.print("Enter Patient ID: ");
-            String patientID = scanner.nextLine();
-            Patient selectedPatient = null;
-
-            for (Patient patient : patients) {
-                if (patient.getPatientID().equalsIgnoreCase(patientID)) {
-                    selectedPatient = patient;
-                    break;
-                }
-            }
-
-            if (selectedPatient == null) {
-                System.out.println("No patient found with the given ID.");
-            } else {
-                selectedDoctor.addPatientToHistory(selectedPatient);
-                System.out.println("Patient assigned to Doctor successfully!");
-            }
-        }
-    }
-
     private static void viewDoctorPatientHistory() {
         System.out.print("Enter Doctor ID: ");
         String doctorID = scanner.nextLine();
@@ -268,4 +407,5 @@ public class Main {
     static {
         scanner = new Scanner(System.in);
     }
+
 }
