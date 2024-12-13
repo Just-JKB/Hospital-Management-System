@@ -143,12 +143,32 @@ public class Main {
         scanner.nextLine(); // Consume the newline character after specialization input
 
         System.out.print("Enter Doctor ID: ");
-        String doctorID = scanner.nextLine();
+        String doctorID;
+        while (true) {
+            doctorID = scanner.nextLine().trim();
+            boolean isUnique = true;
+
+            for (Doctors d : doctors) {
+                if (d.getDoctorID().equals(doctorID)) {
+                    isUnique = false;
+                    break;
+                }
+            }
+
+            if (isUnique) {
+                break; // Exit the loop if the ID is unique
+            } else {
+                System.out.println("The Doctor ID is already in use. Please enter a unique ID.");
+            }
+        }
+
+
 
         Doctors doctor = new Doctors(name, age, gender, specialization, doctorID);
         doctors.add(doctor);
         System.out.println("Doctor added successfully!");
     }
+
 
 
 
@@ -194,7 +214,24 @@ public class Main {
         }
 
         System.out.print("Enter Patient ID: ");
-        String patientID = scanner.nextLine();
+        String patientID;
+        while (true) {
+            patientID = scanner.nextLine().trim();
+            boolean isUnique = true;
+
+            for (Patient existingPatient : patients) {
+                if (existingPatient.getPatientID().equals(patientID)) {
+                    isUnique = false;
+                    break;
+                }
+            }
+
+            if (isUnique) {
+                break; // Exit the loop if the ID is unique
+            } else {
+                System.out.println("This ID is already in use. Please enter a different ID.");
+            }
+        }
 
         // Map of specializations to ailments
         String[][] specializationToAilments = {
